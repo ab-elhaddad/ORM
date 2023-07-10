@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("MAIN_DATABASE_URL") // this is the MYSQL string you need to override it in case you need to use the dataproxy (DATABASE_URL) env 
+  relationMode = "prisma"
+}
+
+model ArchivedJob {
+  id       String @id @unique
+  company  String
+  title    String
+  link     String
+  email    String
+  type     String
+  deadline String
+  logo     String
+  skills   String
+}
+
+model CrawledJob {
+  id       String @id @unique
+  company  String
+  title    String
+  link     String
+  email    String
+  type     String
+  deadline String
+  logo     String
+  skills   String
+}
+
+model Job {
+  id       String @id @unique
+  company  String
+  title    String
+  link     String
+  email    String
+  type     String
+  deadline String
+  logo     String
+  skills   String
+
+  @@index([title])
+}
+
+model Lister {
+  id    String @id @unique
+  name  String
+  token String
+}
