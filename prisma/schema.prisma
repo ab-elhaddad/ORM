@@ -8,46 +8,115 @@ datasource db {
   relationMode = "prisma"
 }
 
-model ArchivedJob {
-  id       String @id @unique
-  company  String
-  title    String
-  link     String
-  email    String
-  type     String
-  deadline String
-  logo     String
-  skills   String
+model Opportunity {
+  id          String          @id @default(uuid())
+  title       String
+  company     String
+  type        opportunityType
+  logo        String
+  skills      String?
+  link        String?
+  promoted    Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  description String          @db.LongText
 }
 
-model CrawledJob {
-  id       String @id @unique
-  company  String
-  title    String
-  link     String
-  email    String
-  type     String
-  deadline String
-  logo     String
-  skills   String
+model CrawledOpportunity {
+  id          String          @id @default(uuid())
+  title       String
+  company     String
+  type        opportunityType
+  logo        String
+  skills      String?
+  link        String?
+  description String          @db.VarChar(10240)
 }
 
-model Job {
-  id       String @id @unique
-  company  String
-  title    String
-  link     String
-  email    String
-  type     String
-  deadline String
-  logo     String
-  skills   String
-
-  @@index([title])
+model User {
+  id            Int               @id @default(autoincrement())
+  username      String            @unique
+  email         String            @unique
+  level         opportunityType
+  role          String?
+  newsletter    Boolean           @default(true)
+  profile       Profile?
+  opportunities UserOpportunity[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 }
 
-model Lister {
-  id    String @id @unique
-  name  String
-  token String
+model UserOpportunity {
+  id          String          @id @default(uuid())
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      Int             @unique
+  title       String
+  company     String
+  type        opportunityType
+  logo        String
+  skills      String?
+  link        String? // the link to the page in the zJunior
+  promoted    Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  description String          @db.LongText
+}
+
+model Profile {
+  id        String          @id @default(uuid())
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    Int             @unique
+  avatar    String
+  resume    String
+  bio       String          @db.VarChar(512)
+  linkedin  String
+  github    String
+  website   String
+  skills    String
+  projects  UserProject[]
+  expriance UserExpriance[]
+  education UserEducation[]
+}
+
+model UserProject {
+  id          String  @id @default(uuid())
+  profile     Profile @relation(fields: [profileid], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  profileid   String  @unique
+  name        String  @unique
+  bio         String // from Github
+  description String? @db.VarChar(512) // user write it himself
+  Link        String
+  page        String?
+  commits     Int
+  stars       Int
+  Languages   String
+}
+
+model UserExpriance {
+  id          String   @id @default(uuid())
+  profile     Profile  @relation(fields: [profileid], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  profileid   String   @unique
+  title       String
+  type        String
+  description String?  @db.VarChar(512)
+  location    String?
+  company     String
+  started     DateTime
+  ended       DateTime
+  skills      String
+}
+
+model UserEducation {
+  id          String  @id @default(uuid())
+  profile     Profile @relation(fields: [profileid], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  profileid   String  @unique
+  university  String
+  degree      String
+  Major       String
+  description String? @db.VarChar(512)
+  started     String
+  ended       String
+}
+
+enum opportunityType {
+  Internship
+  Entrylevel
 }
