@@ -12,21 +12,23 @@ model Opportunity {
   id          String          @id @default(uuid())
   title       String
   company     String
-  type        opportunityType
+  level       opportunityLevel
   logo        String
+  role        String          @default("null")
   skills      String?
   link        String?
+  description String          @db.LongText
   promoted    Boolean         @default(false)
   createdAt   DateTime        @default(now())
-  description String          @db.LongText
 }
 
 model CrawledOpportunity {
   id          String          @id @default(uuid())
   title       String
   company     String
-  type        opportunityType
+  level       opportunityLevel
   logo        String
+  role        String          @default("null")
   skills      String?
   link        String?
   description String          @db.VarChar(10240)
@@ -36,7 +38,7 @@ model User {
   id            Int               @id @default(autoincrement())
   username      String            @unique
   email         String            @unique
-  level         opportunityType
+  level         opportunityLevel
   role          String?
   newsletter    Boolean           @default(true)
   profile       Profile?
@@ -51,8 +53,9 @@ model UserOpportunity {
   userId      Int             @unique
   title       String
   company     String
-  type        opportunityType
+  level       opportunityLevel
   logo        String
+  role        String           @default("null")
   skills      String?
   link        String? // the link to the page in the zJunior
   promoted    Boolean         @default(false)
@@ -95,7 +98,7 @@ model UserExpriance {
   profile     Profile  @relation(fields: [profileid], references: [id], onDelete: Cascade, onUpdate: Cascade)
   profileid   String   @unique
   title       String
-  type        String
+  level       String
   description String?  @db.VarChar(512)
   location    String?
   company     String
@@ -116,7 +119,20 @@ model UserEducation {
   ended       String
 }
 
-enum opportunityType {
+model Reports{
+  id            String   @id @default(uuid())
+  issuedBy      String
+  type          reportType
+  description   String   @db.VarChar(1024)
+  IssuedAt      DateTime @default(now())
+}
+
+enum opportunityLevel {
   Internship
   Entrylevel
+}
+
+enum reportType {
+  issue
+  suggestion
 }
