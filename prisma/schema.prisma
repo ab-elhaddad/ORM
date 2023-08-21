@@ -8,6 +8,10 @@ datasource db {
   relationMode = "prisma"
 }
 
+model OpportunityArchive {
+  id   String   @id @unique @default(uuid())
+}
+
 model Opportunity {
   id          String          @id @default(uuid())
   title       String
